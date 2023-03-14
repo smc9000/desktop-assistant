@@ -1,0 +1,22 @@
+import requests
+from bs4 import BeautifulSoup
+
+# Define the search query
+query = "Python programming language"
+
+# Send a request to Google and get the HTML response
+response = requests.get(f"https://www.google.com/search?q={query}")
+
+# Parse the HTML response using BeautifulSoup
+soup = BeautifulSoup(response.text, "html.parser")
+
+# Find all the search results
+search_results = soup.select(".g")
+
+# Print the titles and links of the search results
+for result in search_results:
+    title = result.select_one("h3").get_text()
+    link = result.select_one("a")["href"]
+    print(title)
+    print(link)
+    print()
