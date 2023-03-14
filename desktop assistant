@@ -1,0 +1,57 @@
+import speech_recognition as sr
+import pyttsx3
+import pywhatkit
+import datetime
+
+# initialize text-to-speech engine
+engine = pyttsx3.init()
+
+# define function to speak text
+def speak(text):
+    engine.say(text)
+    engine.runAndWait()
+
+# initialize speech recognition engine
+r = sr.Recognizer()
+
+# define function to recognize speech
+def recognize_speech():
+    with sr.Microphone() as source:
+        print("Listening...")
+        audio = r.listen(source)
+        try:
+            text = r.recognize_google(audio)
+            print(f"You said: {text}")
+            return text.lower()
+        except sr.UnknownValueError:
+            print("Sorry, I didn't catch that.")
+            return ""
+        except sr.RequestError as e:
+            print(f"Sorry, there was an error processing your request: {e}")
+            return ""
+
+# define function to perform tasks
+def perform_task(task):
+    if "play" in task:
+        song = task.replace("play", "")
+        speak(f"Playing {song}")
+        pywhatkit.playonyt(song)
+    elif "time" in task:
+        now = datetime.datetime.now().strftime("%I:%M %p")
+        speak(f"The time is {now}")
+    elif "date" in task:
+        today = datetime.date.today().strftime("%B %d, %Y")
+        speak(f"Today is {today}")
+    elif "search" in task:
+        query = task.replace("search", "")
+        speak(f"Searching for {query}")
+        pywhatkit.search(query)
+    elif "stop" in task:
+        speak("Goodbye!")
+        exit()
+
+# main loop
+while True:
+    task = recognize_speech()
+    if task:
+        perform_task(task)
